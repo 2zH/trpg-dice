@@ -1,0 +1,54 @@
+{
+  "name": "@2zh/trpg-dice",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone 3D TRPG dice and dice_roll tool extracted from trpg-editor",
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/core.d.ts",
+      "import": "./dist/core.js"
+    },
+    "./react": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": "./src/styles.css"
+  },
+  "files": [
+    "dist",
+    "src/styles.css",
+    "README.md",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --maxWorkers=2",
+    "build": "pnpm typecheck && tsc -p tsconfig.lib.json && vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "dependencies": {
+    "cannon-es": "0.20.0",
+    "three": "0.186.1"
+  },
+  "peerDependencies": {
+    "react": ">=18 <20",
+    "react-dom": ">=18 <20"
+  },
+  "devDependencies": {
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@types/three": "0.186.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.5",
+    "vitest": "4.1.9",
+    "happy-dom": "20.10.4"
+  }
+}

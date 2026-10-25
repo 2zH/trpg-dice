@@ -1,0 +1,160 @@
+.workbench-dice__form {
+  display: flex;
+  gap: 8px;
+  max-width: 560px;
+}
+
+.workbench-dice__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 0 14px;
+  color: var(--fg, #2b2622);
+  font: inherit;
+  font-size: var(--text-base, 16px);
+  background: var(--bg, #faf7f0);
+  border: 1px solid var(--border, #d8d0c1);
+  border-radius: var(--radius-control, 10px);
+}
+
+.workbench-dice__input[aria-invalid="true"] {
+  border-color: var(--danger, #a4382d);
+}
+
+.workbench-dice__roll,
+.workbench-dice__die {
+  min-height: 44px;
+  padding: 0 16px;
+  color: var(--fg, #2b2622);
+  font: inherit;
+  font-size: var(--text-sm, 14px);
+  font-weight: 650;
+  background: var(--control-bg, #eae3d6);
+  border: 1px solid var(--border, #d8d0c1);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.workbench-dice__die {
+  min-width: 56px;
+  padding: 0 12px;
+}
+
+.workbench-dice__roll:hover,
+.workbench-dice__die:hover {
+  color: var(--accent-ink, #54401e);
+  background: var(--accent-surface, #e7dbc4);
+  border-color: var(--accent-border, #aa9064);
+}
+
+.workbench-dice__input:focus-visible,
+.workbench-dice__roll:focus-visible,
+.workbench-dice__die:focus-visible {
+  outline: 3px solid var(--focus-ring, #7d612f);
+  outline-offset: 2px;
+}
+
+.workbench-dice__error {
+  margin: 0;
+  color: var(--danger, #a4382d);
+  font-size: var(--text-sm, 14px);
+}
+
+.workbench-dice__common {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* 3D 骰子的舞台（#315、#322）：挂在 body 下、铺满可见视口的透明画布，不接收指针，骰子的影子落在页面上。
+   位置与大小由 DiceTray 按 visualViewport 写进 --dice-stage-*（软键盘弹出时只占键盘上方），再让开刘海等安全区；
+   层级在工作台工具栏（170）之上，Shaggai 打开的面板（175）、表面层（180）与各种菜单（190 起）之下 */
+.workbench-dice__tray {
+  position: fixed;
+  top: calc(var(--dice-stage-top, 0px) + env(safe-area-inset-top, 0px));
+  left: calc(var(--dice-stage-left, 0px) + env(safe-area-inset-left, 0px));
+  width: calc(var(--dice-stage-width, 100%) - env(safe-area-inset-left, 0px) - env(safe-area-inset-right, 0px));
+  height: calc(var(--dice-stage-height, 100%) - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  z-index: 172;
+  pointer-events: none;
+}
+
+/* Shaggai 的 agent 掷骰（#360 A5）演在面板之上。手机上、全屏时面板是 2147483000（包的 --shaggai-z-index），
+   舞台取它的上一级；桌面非全屏的面板是 175，舞台取 176，留在面料层（180）与菜单（190 起）之下。
+   骰子面板自己的舞台仍用上面的 172，不盖住这些。shaggaiResponsive.test.ts 核对这几种层级关系。 */
+.workbench-dice__tray--overlay {
+  z-index: 2147483001;
+}
+
+@media (min-width: 761px) {
+  .workbench-dice__tray--overlay {
+    z-index: 176;
+  }
+
+  .workbench-dice__tray--overlay.workbench-dice__tray--overlay-fullscreen {
+    z-index: 2147483001;
+  }
+}
+
+/* 粗指针且视口矮时，宽度超过 760px 也用手机的面板层级（见 shaggaiResponsive.css），舞台跟着回去 */
+@media (pointer: coarse) and (max-height: 560px) {
+  .workbench-dice__tray--overlay {
+    z-index: 2147483001;
+  }
+}
+
+.workbench-dice__tray canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.workbench-dice__results {
+  display: grid;
+  gap: 2px;
+  max-width: 560px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workbench-dice__result {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 12px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 10px;
+}
+
+.workbench-dice__result:first-child {
+  background: var(--control-bg, #eae3d6);
+}
+
+.workbench-dice__notation {
+  font-weight: 650;
+}
+
+.workbench-dice__detail {
+  overflow: hidden;
+  color: var(--chrome-muted, #72695c);
+  font-size: var(--text-xs, 12px);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workbench-dice__result:first-child .workbench-dice__detail {
+  color: var(--muted, #665d51);
+}
+
+.workbench-dice__total {
+  font-size: var(--text-lg, 22px);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }

@@ -1,0 +1,37 @@
+:root {
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  color: #2b2622; background: #f4f0e7;
+  --fg: #2b2622; --bg: #faf7f0; --border: #d8d0c1; --control-bg: #eae3d6;
+  --text-base: 16px; --text-sm: 14px; --text-xs: 12px; --text-lg: 22px;
+  --radius-control: 10px; --danger: #a4382d; --accent-ink: #54401e;
+  --accent-surface: #e7dbc4; --accent-border: #aa9064; --focus-ring: #7d612f;
+  --muted: #665d51; --chrome-muted: #72695c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 920px; padding: 28px 28px 40px; margin: auto; }
+header { display: flex; justify-content: space-between; align-items: center; }
+a { color: inherit; text-underline-offset: 4px; }
+.wordmark { font-size: 13px; font-weight: 800; letter-spacing: .18em; text-decoration: none; }
+.intro { padding: 64px 0 30px; }
+.eyebrow { font-size: 12px; color: var(--muted); }
+.intro h1 { font-size: clamp(30px, 6vw, 48px); font-weight: 600; letter-spacing: -.04em; margin: 16px 0; }
+p, footer { color: var(--muted); line-height: 1.7; }
+nav { display: flex; gap: 8px; margin-bottom: 26px; }
+button { cursor: pointer; font: inherit; color: inherit; min-height: 44px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); padding: 8px 18px; }
+nav button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+button:focus-visible, a:focus-visible, textarea:focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.workbench-tool, .tool-demo { display: grid; gap: 16px; }
+.workbench-tool h1, .tool-demo h1 { font-size: 20px; margin: 0; }
+.workbench-tool__hint { font-size: 14px; margin: 0; }
+.tool-demo > p { margin: 0; }
+.tool-demo form { display: grid; justify-items: start; gap: 12px; max-width: 560px; }
+.tool-demo label { font-size: 14px; }
+textarea { width: 100%; padding: 12px; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: 10px; font: 14px/1.6 monospace; resize: vertical; }
+.tool-result { font: 600 20px/1.6 monospace; overflow-wrap: anywhere; }
+details { max-width: 560px; }
+summary { cursor: pointer; }
+pre { padding: 16px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); overflow: auto; font-size: 12px; max-height: 300px; }
+footer { border-top: 1px solid var(--border); margin-top: 64px; padding-top: 20px; font-size: 12px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+@media (max-width: 600px) { main { padding: 24px 20px; } .intro { padding-top: 40px; } .workbench-dice__result { gap: 8px; padding-inline: 8px; } }
