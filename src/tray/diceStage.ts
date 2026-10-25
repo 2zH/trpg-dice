@@ -27,9 +27,10 @@ import {
   Vector3,
   WebGLRenderer
 } from "three";
-import { buildDiceMeshData, type DiceAtlasLayout } from "./diceMesh.js";
-import { diceFaceLabel, diceLabelNeedsUnderline, diceOverlapDepth, getDiceShape, multiply, relabelRotation, resultFaceAlignment, resultFaceIndex, type DiceLabelKind, type DiceShape, type Quat, type SupportedDiceSides } from "./diceShapes.js";
+import { buildDiceMeshData } from "./diceMesh.js";
+import { diceFaceLabel, diceOverlapDepth, getDiceShape, multiply, relabelRotation, resultFaceAlignment, resultFaceIndex, type DiceLabelKind, type DiceShape, type Quat, type SupportedDiceSides } from "./diceShapes.js";
 import { diceFrameSeconds, diceRadius, diceRestHeight, fitDiceTable, readOrientation, readPosition, simulateDiceInSlices, type DiceSimulation, type DiceTrayBounds } from "./diceSimulation.js";
+import { paintDiceAtlas } from "./diceTexture.js";
 import { createReplayClock } from "./replayClock.js";
 import { followVisualViewport } from "./stageViewport.js";
 
@@ -54,8 +55,6 @@ export interface DiceTrayRoll {
 
 // 世界单位/像素：原来面板里 240px 高的托盘对应半深 2.4，铺满视口后保持同一个比例，骰子在屏幕上的大小不变
 const worldUnitsPerPixel = 0.02;
-const bodyColor = "#efe7d6";
-const inkColor = "#2b2622";
 
 export class DiceStage {
   private readonly renderer: WebGLRenderer;
@@ -327,57 +326,11 @@ export class DiceStage {
     const cached = this.materials.get(key);
     if (cached) return cached;
     const shape = getDiceShape(sides);
-    const texture = new CanvasTexture(paintAtlas(shape, buildDiceMeshData(shape, 1).atlas, kind));
+    const texture = new CanvasTexture(paintDiceAtlas(shape, buildDiceMeshData(shape, 1).atlas, kind));
     texture.colorSpace = SRGBColorSpace;
     texture.anisotropy = 4;
     const material = new MeshStandardMaterial({ map: texture, roughness: 0.5, metalness: 0.02, flatShading: true });
     this.materials.set(key, material);
     return material;
   }
-}
-
-// 骰面图集：每个面一格，骰子本色打底，刻的字居中；倒过来会读错的字加下划线（diceLabelNeedsUnderline）。
-// d4 没有朝上的面：每个面的三个角上各刻一个数，是这个角所在的顶点对面那一面的点数，朝上的顶点刻的数就是读数（resultFaceIndex）
-function paintAtlas(shape: DiceShape, atlas: DiceAtlasLayout, kind?: DiceLabelKind): HTMLCanvasElement {
-  const tile = 128;
-  const canvas = document.createElement("canvas");
-  canvas.width = atlas.columns * tile;
-  canvas.height = atlas.rows * tile;
-  const context = canvas.getContext("2d");
-  if (!context) return canvas;
-  context.fillStyle = bodyColor;
-  context.fillRect(0, 0, canvas.width, canvas.height);
-  context.fillStyle = inkColor;
-  context.textAlign = "center";
-  context.textBaseline = "middle";
-  const draw = (label: string, x: number, y: number, size: number, angle = 0) => {
-    context.save();
-    context.translate(x, y);
-    context.rotate(angle);
-    context.font = `600 ${size}px Georgia, "Times New Roman", serif`;
-    context.fillText(label, 0, size * 0.04);
-    if (diceLabelNeedsUnderline(label)) {
-      const width = context.measureText(label).width;
-      context.fillRect(-width / 2, size * 0.42, width, Math.max(2, size * 0.07));
-    }
-    context.restore();
-  };
-  shape.values.forEach((value, face) => {
-    const [column, row] = atlas.tiles[face]!;
-    const centerX = (column + 0.5) * tile;
-    const centerY = (row + 0.5) * tile;
-    if (shape.sides === 4) {
-      const size = tile * atlas.faceRadius * 0.42;
-      shape.faces[face]!.forEach((vertex, corner) => {
-        const opposite = shape.faces.findIndex((other) => !other.includes(vertex));
-        const [x, y] = atlas.corners[face]![corner]!;
-        // 字放在角与面中心之间，字头朝着角
-        draw(diceFaceLabel(shape.values[opposite]!, kind), centerX + x * tile * 0.58, centerY + y * tile * 0.58, size, Math.atan2(x, -y));
-      });
-      return;
-    }
-    const label = diceFaceLabel(value, kind);
-    draw(label, centerX, centerY, tile * atlas.faceRadius * atlas.insetRatio * (label.length > 1 ? 1.05 : 1.3));
-  });
-  return canvas;
 }
