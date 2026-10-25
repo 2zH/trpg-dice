@@ -139,4 +139,3 @@ export function readDeskValue(die: DeskDie): number {
   const shape=getDiceShape(die.sides);
   return shape.values[resultFaceIndex(shape,multiply(die.orientation,die.labels))]!;
 }
-
